@@ -1,0 +1,107 @@
+
+{% extends "bootstrap/base.html" %}
+
+{% block content %}
+    <div id="install_package">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+    </div>
+
+    <hr>
+    <div id="btn_group" class="col-md-12">
+        <h4 class="col-md-4 col-md-offset-1 col-md-offset-1">
+            検索するグループを選択して下さい ＞
+        </h4>
+
+        <form action="/data_group" method="post" class="form-inline">
+            {% for c in group_list: %}
+                &nbsp;&nbsp;<input type="submit" class="btn btn-lg btn-success btn-outline-warning" name="btn" value="{{ c }}">
+            {% endfor %}
+        </form>
+        <hr>
+    </div>
+
+    <div id="ent_search">
+        <div class="col-md-12">
+            <form action="/data_refine" method="post" class="form-inline">
+                {% if use_group: %}
+                    <input class="col-md-2 col-md-offset-1 col-md-offset-1" type="text" value=" グループ: {{ use_group }}" disabled  style="height: 30px;">
+                {% else: %}
+                    <input class="col-md-2 col-md-offset-1 col-md-offset-1" type="text" value=" グループ: ----------" style="height: 30px;">
+                {% endif %}
+
+                <select class="select_refine1 col-md-2" name="select_refine1" style="height: 30px;">
+                    <option value="" selected="selected">項目を選択</option>
+                    {% for c in search_dic: %}
+                        <option value="{{ c }}">{{ c }}</option>
+                    {% endfor %}
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <select class="select_refine2 col-md-3" name="select_refine2" style="height: 30px;">
+                    <option value="" selected="selected">要素を選択</option>
+                    {% for c in search_dic: %}
+                        {% for cc in search_dic[c]: %}
+                            <option value="{{ cc }}" data-val="{{ c }}">{{ cc }}</option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+
+                <script>
+                    var $select_refine2 = $('.select_refine2');
+                    var original = $select_refine2.html();
+
+                    $('.select_refine1').change(function() {
+                        var val1 = $(this).val();
+                        $select_refine2.html(original).find('option').each(function() {
+                            var val2 = $(this).data('val');
+                            if (val1 != val2) { $(this).not(':first-child').remove(); }
+                        });
+
+                        if ($(this).val() == "") { $select_refine2.attr('disabled', 'disabled'); }
+                        else { $select_refine2.removeAttr('disabled'); }
+                    });
+
+                </script>
+
+                &nbsp;&nbsp;<input type="submit" class="btn btn-primary" name="btn" value="絞り込む">
+                &nbsp;&nbsp;<input type="submit" class="btn btn-danger" name="btn" value="全て表示">
+            </form>
+        <br>
+
+        </div>
+        <div class="col-md-12">
+            <input class="select_refine1 col-md-2 col-md-offset-3" type="text" id="use_key" value=" 項目: {{ use_col }}" disabled>
+            <input class="select_refine2 col-md-3" type="text" id="use_col" value=" 要素: {{ use_key }}" disabled>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span> が表示されています </span>
+        </div>
+    </div>
+
+    <div class="col-md-10" style="text-align: center;">
+        <br>
+        <table id="table" class="table table-sm table-hover table-bordered table-striped table-fixed"
+               style="text-align: center;">
+            <thead style="display: block;">
+                <tr>
+                    <th class="col-md-1"> 購入先 </th>
+                    {% for c in search_dic: %}
+                        <th class="col-md-1"> {{ c }} </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+
+            <tbody style="height: 560px; overflow-y: scroll; display: block;">
+                {% for No in data_dic: %}
+                    <tr>
+                        {% for data in data_dic[No]: %}
+                            {% if data != nan %}  <td class="col-md-1 align-middle"> {{ data }} </td>
+                            {% else %} <td class="col-md-1 align-middle"> - </td> {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+
+
