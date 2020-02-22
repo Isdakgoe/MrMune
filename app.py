@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
-import pandas as pd
 from flask_bootstrap import Bootstrap
+import pandas as pd
 
 use_col = "     -----     "
 use_key = "     -----     "
